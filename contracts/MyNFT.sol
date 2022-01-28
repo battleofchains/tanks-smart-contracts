@@ -101,6 +101,19 @@ contract MyNFT is ERC721Enumerable, Ownable {
         return _tokenId;
     }
 
+    function buyAndMint(uint256 _tokenId, string memory _tokenURI, uint256 _price) public returns (uint256) {
+        require(!_exists(_tokenId), "Error, token already exists");
+
+        address payable _buyer = payable(msg.sender);
+        _contractOwner.transfer(_price);
+
+        mint(_tokenId, _tokenURI, _buyer, _price);
+
+        emit Purchase(address(0), _buyer, price[_tokenId], _tokenId, tokenURI(_tokenId));
+
+        return _tokenId;
+    }
+
     function buy(uint256 _id) external payable {
         _validate(_id);
 
