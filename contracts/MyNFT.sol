@@ -1546,21 +1546,19 @@ contract MyNFT is ERC721Enumerable, Ownable {
         emit Trade(_id, _sellerValue, _commissionValue);
     }
 
-    function updatePrice(uint256 _tokenId, uint256 _price) public returns (bool) {
-        uint256 oldPrice = price[_tokenId];
+    function updateListingStatus(uint256 _tokenId, bool shouldBeListed, uint256 _price) public returns (bool) {
         require(msg.sender == ownerOf(_tokenId), "Error, you are not the owner");
+        uint256 oldPrice = price[_tokenId];
+        bool oldStatus = listedMap[_tokenId];
+        listedMap[_tokenId] = shouldBeListed;
         price[_tokenId] = _price;
 
-        emit PriceUpdate(msg.sender, oldPrice, _price, _tokenId);
-        return true;
-    }
-
-    function updateListingStatus(uint256 _tokenId, bool shouldBeListed) public returns (bool) {
-        require(msg.sender == ownerOf(_tokenId), "Error, you are not the owner");
-
-        listedMap[_tokenId] = shouldBeListed;
-
-        emit NftListStatus(msg.sender, _tokenId, shouldBeListed);
+        if (oldStatus != shouldBeListed) {
+            emit NftListStatus(msg.sender, _tokenId, shouldBeListed);
+        }
+        if (oldPrice != _price) {
+            emit PriceUpdate(msg.sender, oldPrice, _price, _tokenId);
+        }
 
         return true;
     }
